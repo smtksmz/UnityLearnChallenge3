@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class PlayerControllerX : MonoBehaviour
 {
@@ -16,6 +18,11 @@ public class PlayerControllerX : MonoBehaviour
     private AudioSource playerAudio;
     public AudioClip moneySound;
     public AudioClip explodeSound;
+    public int point = 0;
+
+    public GameObject panel;
+
+    [SerializeField] private TextMeshProUGUI _text;
 
 
     // Start is called before the first frame update
@@ -33,6 +40,7 @@ public class PlayerControllerX : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        _text.text = point.ToString();
         // While space is pressed and player is low enough, float up
         if (Input.GetKey(KeyCode.Space) && !gameOver)
         {
@@ -48,8 +56,9 @@ public class PlayerControllerX : MonoBehaviour
             explosionParticle.Play();
             playerAudio.PlayOneShot(explodeSound, 1.0f);
             gameOver = true;
-            Debug.Log("Game Over!");
             Destroy(other.gameObject);
+            panel.SetActive(true);
+            StartCoroutine(GameStop());
         }
 
         // if player collides with money, fireworks
@@ -58,9 +67,15 @@ public class PlayerControllerX : MonoBehaviour
             fireworksParticle.Play();
             playerAudio.PlayOneShot(moneySound, 1.0f);
             Destroy(other.gameObject);
-
+            point++;
         }
 
+    }
+
+    IEnumerator GameStop()
+    {
+        yield return new WaitForSeconds(1.50f);
+        Time.timeScale = 0;
     }
 
 }
